@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bet Me Up</string>
+    <string name="players">Players: %1$s</string>
 </resources>

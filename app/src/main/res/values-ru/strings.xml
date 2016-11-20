@@ -3,4 +3,5 @@
     <string name="app_name">Спорим, что...</string>
     <string name="new_game">Новая игра</string>
     <string name="rules">Правила</string>
+    <string name="players">Игроков: %1$s</string>
 </resources>
