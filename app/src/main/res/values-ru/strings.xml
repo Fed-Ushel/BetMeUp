@@ -4,4 +4,7 @@
     <string name="new_game">Новая игра</string>
     <string name="rules">Правила</string>
     <string name="players">Игроков: %1$s</string>
+    <string name="player">Игрок </string>
+    <string name="input_player_bet">Ваша ставка:</string>
+
 </resources>
