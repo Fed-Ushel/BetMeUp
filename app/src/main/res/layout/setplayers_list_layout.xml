@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Данный файл не используется. Сразу начинается игра с рожами и именами по умолчанию (но возраст надо править) -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ImageView android:id="@+id/playerImage"
+               android:layout_width="100dp"
+               android:layout_height="100dp"
+               android:src="@drawable/smiley1"/>
+    <EditText
+            android:layout_width="210dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Name"
+            android:ems="10"
+
+            android:id="@+id/inputPlayerName" android:layout_alignTop="@+id/playerImage"
+            android:layout_toRightOf="@id/playerImage" android:layout_toEndOf="@id/playerImage"
+            android:layout_marginLeft="40dp"  android:layout_marginTop="5dp" android:layout_marginStart="50dp"/>
+
+    <TextView   android:text="Возраст"
+                android:textSize="10dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_above="@+id/seekBar"
+                android:layout_alignLeft="@+id/inputPlayerName" android:layout_alignStart="@+id/inputPlayerName"
+                android:id="@+id/textView"/>
+    <SeekBar
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:id="@id/seekBar" android:layout_alignBottom="@+id/playerImage"
+            android:layout_alignLeft="@+id/inputPlayerName" android:layout_alignStart="@+id/inputPlayerName"
+            android:layout_marginBottom="10dp"/>
+
+
+</RelativeLayout>

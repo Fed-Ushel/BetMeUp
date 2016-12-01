@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Based on article http://stackoverflow.com/questions/8937380/how-to-set-id-of-dynamic-created-layout -->
+<resources>
+    <item type="id" name="pLayout1" />
+    <item type="id" name="player1Text" />
+    <item type="id" name="player1Image" />
+
+    <item type="id" name="pLayout2" />
+    <item type="id" name="player2Text" />
+    <item type="id" name="player2Image" />
+
+    <item type="id" name="pLayout3" />
+    <item type="id" name="player3Text" />
+    <item type="id" name="player3Image" />
+
+    <item type="id" name="pLayout4" />
+    <item type="id" name="player4Text" />
+    <item type="id" name="player4Image" />
+
+
+    <item type="id" name="pLayout5" />
+    <item type="id" name="player5Text" />
+    <item type="id" name="player5Image" />
+
+
+    <item type="id" name="pLayout6" />
+    <item type="id" name="player6Text" />
+    <item type="id" name="player6Image" />
+
+
+    <item type="id" name="pLayout7" />
+    <item type="id" name="player7Text" />
+    <item type="id" name="player7Image" />
+
+
+    <item type="id" name="pLayout8" />
+    <item type="id" name="player8Text" />
+    <item type="id" name="player8Image" />
+
+
+    <item type="id" name="pLayout9" />
+    <item type="id" name="player9Text" />
+    <item type="id" name="player9Image" />
+
+
+    <item type="id" name="pLayout10" />
+    <item type="id" name="player10Text" />
+    <item type="id" name="player10Image" />
+</resources>
