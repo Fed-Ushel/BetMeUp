@@ -8,6 +8,7 @@ package com.gomamushka.android.betmeup;
  *
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,70 +16,66 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.view.ViewGroup.LayoutParams;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 
 public class GameActivity extends AppCompatActivity {
     private final String LOG_TAG = "FED";
+    //Размер экрана активности в DP
+    public int dpHeight;
+    public int dpWidth;
+    //Родительский лейаут для лейаутов игроков
     LinearLayout playersGameLayout;
 
-    //Изображения, уже использующиеся игроками (для выбора уникального изображения для игрока - 10 игроков)
-        private ArrayList<Integer> usedImagesNum = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
 
     //Лейауты, в которых хранится отображение пользователя
         private RelativeLayout[] playerLayouts;
 
-    //Префикс файла изображения и их папка
-    private static final String IMG_PREFIX = "natur";
-    private static final String IMG_FOLDER = "drawable/";
+
     //новая игра
     public Game game;
 
-    //todo Получить размер экрана и смасштабировать изображения в зависимости от количества игроков и размера экрана
-    //Размер экрана в DP
-    public float dpHeight;
-    public float dpWidth;
 
-
-
-
-    //Объект  rand для генерации случайных чисел во время игры
-    private static Random rand = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_game);
         Intent intent = getIntent();
         Integer playersCount = intent.getIntExtra("playersCount", 3);
 
-        playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
         //Создаем игру
         game = new Game(playersCount);
+        setContentView(R.layout.activity_game);
+        //Находим родительский лейаут для вставки леейаутов игроков
+        playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
+        // Получаем размеры экрана активности
+        dpWidth = game.helper.getScreenWidth(this);
+        dpHeight = game.helper.getScreenHeigth(this);
+
 
         //Инициализируем игроков и лейауты
         playerLayouts = new RelativeLayout[playersCount];
-        for (int i= 0; i < playersCount; i++) {
-            makePlayer(i);
-            makeRelativeLayout(getString(R.string.player_layout_prefix) + i, i );
+        for (int i = 0; i < playersCount; i++) {
+            game.helper.makePlayer(i, game, getApplicationContext());
+            makeRelativeLayout(getString(R.string.player_layout_prefix) + i, i);
         }
         //Подключаем лейауты игроков к основному лейауту
         for (int i = 0; i < game.players.length; i++) {
+            game.players[i].playerImage.getLayoutParams().height = 40;
+            game.players[i].playerImage.getLayoutParams().width = 40;
             playerLayouts[i].addView(game.players[i].playerImage);
-           playersGameLayout.addView(playerLayouts[i]);
+            playerLayouts[i].setBackgroundColor(Color.parseColor("#FF0000"));
+            Log.d (LOG_TAG, "Width: " + playerLayouts[i].getWidth() + " Height: " + playerLayouts[i].getHeight());
+            playersGameLayout.addView(playerLayouts[i]);
         }
-      //  inflateView(i+1, choosePlayerImageSrc());
+        //  Добавили все лейауты, задаем контентвью;
 
+    }
 
 /*
  Добавляем элементы поля (Игроков)
@@ -97,68 +94,33 @@ public class GameActivity extends AppCompatActivity {
  getResId преобразовывает текст в ссылку на ID ресурса (другим способом передать ссылку на ресурс в layout.setId неполучается.
 
 */
-    }
-
-    //
-    private void inflateView(int x, String src) {
 
 
+    //todo Переделать? класс GameHelper в статический в соответствии с решением
 
-
-
-
-    }
-
-    // http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
-    //USAGE: getResId("icon", Drawable.class);
-    public static int getResId(String resName, Class<?> c) {
-
-        try {
-            Field idField = c.getDeclaredField(resName);
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    //выбираем изображение из ресурсов (1-10) случайным образом и возвращаем SRC изображения
-    private String choosePlayerImageSrc() {
-        Integer randNum = rand.nextInt(usedImagesNum.size()); //Произвольный индекс массива
-        Integer imgNum = usedImagesNum.get(randNum); //Берем число из индекста
-        usedImagesNum.remove(imgNum);
-        return (IMG_FOLDER + IMG_PREFIX  + imgNum.toString());
-    }
-    //Создаем ImageView по его src и ID из файла ids.xml
-    private ImageView makeImageView (String id, String src, LayoutParams lp) {
-        ImageView imageView = new ImageView(GameActivity.this);
-        //Устанавливаем ID Для ImageView
-        imageView.setId(getResId(id, Drawable.class));
-
-        //Получаем ID графического ресурса по его SRC в текстовом виде
-        //Отсюда http://stackoverflow.com/questions/6783327/setimageresource-from-a-string
-        Context c = getApplicationContext();
-        int resId = c.getResources().getIdentifier(src, null, c.getPackageName());
-        imageView.setImageResource(resId);
-        imageView.setLayoutParams(lp);
-        return imageView;
-    }
+    /**
+     *
+     *                         Java has static nested classes but it sounds like you're looking for a top-level static class. Java has no way of making a top-level class static but you can simulate a static class like this:
+     Declare your class final - Prevents extension of the class since extending a static class makes no sense
+     Make the constructor private - Prevents instantiation by client code as it makes no sense to instantiate a static class
+     Make all the members and functions of the class static - Since the class cannot be instantiated no instance methods can be called or instance fields accessed
+     Note that the compiler will not prevent you from declaring an instance (non-static) member. The issue will only show up if you attempt to call the instance member
+     *
+     *
+     *
+     */
 
     //Создаем RelativeLayout по его ID из файла ids.xml
-    private void makeRelativeLayout(String id, int i) {
+    public void makeRelativeLayout(String id, int i) {
         RelativeLayout layout = new RelativeLayout(GameActivity.this);
-        layout.setId(getResId(id, RelativeLayout.class));
-        LayoutParams layoutParams
-                = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        layout.setId(GameHelper.getResId(id, RelativeLayout.class));
+        ViewGroup.LayoutParams layoutParams
+                = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layout.setLayoutParams(layoutParams);
         playerLayouts[i] = layout;
     }
 
-    //Создаем игрока
-    private void makePlayer(int i) {
-    //Формируем строку ID из файла ids.xml
-    String id = getString(R.string.player_image_prefix) + (i+1) + getString(R.string.player_image_suffix);
-    ImageView iv = makeImageView(id, choosePlayerImageSrc(), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-    game.players[i] = new Player(getString(R.string.player)+(i+1), iv);
-    }
+
+
+
 }

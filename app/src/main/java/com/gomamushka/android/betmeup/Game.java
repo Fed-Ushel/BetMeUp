@@ -10,11 +10,16 @@ public class Game {
     private Integer turnCount;   //Количество ходов
     private Integer totalTurnBet; //Суммарная ставка на ход
     private static final Integer MAX_DOTS_TURN = 3;
+    public GameHelper helper;
 
     public Game(Integer num) {
         numOfPlayers = num;
         players = new Player[num];
         turnCount = 1;
         totalTurnBet = 0;
+        //Добавляем к объекту helper
+        helper = new GameHelper();
+
+
     }
 }
