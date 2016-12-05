@@ -4,8 +4,8 @@ package com.gomamushka.android.betmeup;
  * Main Game Activity class
  * Creates new game, players with attibutes, prepares layouts for each player and puts it on a screen,
  * then run the game
- * todo Может быть имеет смысл вынести подготовку в отдельный класс типа GameHelper и оставить только визуализацию и управление игрой
- *
+ * todo - Можно не заморачиваться с созданием лейаутов программно, а надуть вью несклько раз, после чего получить
+ * доступ к дочерним объектам согласно http://stackoverflow.com/questions/8395168/android-get-children-inside-a-view
  */
 
 import android.app.Activity;
@@ -15,12 +15,18 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 
 
 public class GameActivity extends AppCompatActivity {
@@ -31,17 +37,19 @@ public class GameActivity extends AppCompatActivity {
     //Родительский лейаут для лейаутов игроков
     LinearLayout playersGameLayout;
 
+    //Массив ImageView игроков в Активности (не путать с ImageView игрока)
+    ArrayList<ImageView> playersIvList = new ArrayList<ImageView>();
 
-    //Лейауты, в которых хранится отображение пользователя
-        private RelativeLayout[] playerLayouts;
-
+    //Массив TextView игроков в Актисности
+    ArrayList<TextView> playersTvList = new ArrayList<TextView>();
 
     //новая игра
     public Game game;
 
+    //Размер лейаута на 1 игрока
+    private int playerLayoutWidth;
 
-
-    @Override
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -54,16 +62,53 @@ public class GameActivity extends AppCompatActivity {
         //Находим родительский лейаут для вставки леейаутов игроков
         playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
         // Получаем размеры экрана активности
+        final float scale =  getResources().getDisplayMetrics().density;
         dpWidth = game.helper.getScreenWidth(this);
         dpHeight = game.helper.getScreenHeigth(this);
+            Log.d(LOG_TAG, "width: " + dpWidth);
+            Log.d(LOG_TAG, "height: " + dpHeight);
+            Log.d(LOG_TAG, "scale=" + scale);
+
+        playerLayoutWidth = (int) (dpHeight / playersCount * scale);
 
 
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        for (int i = 0; i < playersCount; i++) {
+            game.helper.makePlayer(i, game, getApplicationContext());
+            LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.game_player_layout, playersGameLayout, true);
+            View playerLayout = ((ViewGroup) layout).getChildAt(i);
+
+                //Находим дочерние элементы для каждого лейаута игрока, обновляем содержимое и добавляем в массив
+            for (int index = 0; index < ((ViewGroup) playerLayout).getChildCount(); ++index) {
+                View nextChild = ((ViewGroup) playerLayout).getChildAt(index);
+                if (nextChild instanceof ImageView) {
+                    ImageView iv = (ImageView) nextChild;
+                    Log.d(LOG_TAG, "ID-" + iv.getId());
+                    // Вопрос - если добавить сначла в массив а потом изменить SRC изменится ли SRC у элемента в массиве
+                    //Получаем идентификатор картинки и добавляем его в ИмеджВью Лейаута игрока
+                    int resId = this.getResources().getIdentifier(game.players[i].playerImageSrc, null, this.getPackageName());
+                    iv.setImageResource(resId);
+                    iv.getLayoutParams().width =  playerLayoutWidth;
+                    iv.getLayoutParams().height = playerLayoutWidth;
+                    playersIvList.add(iv);
+                }
+            }
+
+
+        }
+
+        /*
         //Инициализируем игроков и лейауты
         playerLayouts = new RelativeLayout[playersCount];
         for (int i = 0; i < playersCount; i++) {
             game.helper.makePlayer(i, game, getApplicationContext());
             makeRelativeLayout(getString(R.string.player_layout_prefix) + i, i);
         }
+
+        */
+
+        /*
         //Подключаем лейауты игроков к основному лейауту
         for (int i = 0; i < game.players.length; i++) {
             game.players[i].playerImage.getLayoutParams().height = 40;
@@ -73,6 +118,8 @@ public class GameActivity extends AppCompatActivity {
             Log.d (LOG_TAG, "Width: " + playerLayouts[i].getWidth() + " Height: " + playerLayouts[i].getHeight());
             playersGameLayout.addView(playerLayouts[i]);
         }
+        */
+
         //  Добавили все лейауты, задаем контентвью;
 
     }
@@ -110,15 +157,7 @@ public class GameActivity extends AppCompatActivity {
      *
      */
 
-    //Создаем RelativeLayout по его ID из файла ids.xml
-    public void makeRelativeLayout(String id, int i) {
-        RelativeLayout layout = new RelativeLayout(GameActivity.this);
-        layout.setId(GameHelper.getResId(id, RelativeLayout.class));
-        ViewGroup.LayoutParams layoutParams
-                = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layout.setLayoutParams(layoutParams);
-        playerLayouts[i] = layout;
-    }
+
 
 
 

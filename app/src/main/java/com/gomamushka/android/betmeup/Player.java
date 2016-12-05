@@ -11,6 +11,7 @@ public class Player {
     public String name;
     public Account account;
     ImageView playerImage;
+    String playerImageSrc;
     RelativeLayout playerLayout;
     public int age; //задания зависят от возраста
     public int bet; //сумма ставки
@@ -23,10 +24,11 @@ public class Player {
     public int luck;
     public int intelligence;
 
-    public Player(String name, ImageView iv) {
+    public Player(String name, ImageView iv, String pi) {
         this.bet = 0;
         this.name = name;
         this.playerImage = iv;
+        this.playerImageSrc = pi;
         this.account = new Account();
     }
 

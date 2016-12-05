@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/playerGameLayout"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="#0099dd"
+    android:id="@+id/playerName" android:layout_gravity="center" android:text="Player_Name"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="#0099dd"
+              android:id="@+id/playerAccountAmount" android:layout_gravity="center" android:text="Player_acc"/>
+    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/playerImage"
+    android:src="@drawable/natur1"/>
+
+</LinearLayout>

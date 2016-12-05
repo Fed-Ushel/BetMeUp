@@ -54,6 +54,7 @@ public class GameHelper {
 
 
     }
+    // Получаем ID ресурсса по его имени
     // http://stackoverflow.com/questions/4427608/android-getting-resource-id-from-string
     //USAGE: getResId("icon", Drawable.class);
     public static int getResId(String resName, Class<?> c) {
@@ -87,8 +88,10 @@ public class GameHelper {
         // НО в этом случае будет доступ только системные ресурсы, но не ресурсы приложения.
         // Для ресурсов приложения обязателен контекст context.getResources()
         String id =  context.getResources().getString(R.string.player_image_prefix) + (i+1) + context.getResources().getString(R.string.player_image_suffix);
-        ImageView iv = GameHelper.makeImageView(id, choosePlayerImageSrc(), new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT),context);
-        game.players[i] = new Player(context.getResources().getString(R.string.player)+(i+1), iv);
+        String imSrc = choosePlayerImageSrc();
+
+        ImageView iv = GameHelper.makeImageView(id,imSrc , new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT),context);
+        game.players[i] = new Player(context.getResources().getString(R.string.player)+(i+1), iv, imSrc);
     }
 
 
