@@ -21,10 +21,7 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import java.util.ArrayList;
 
@@ -38,7 +35,7 @@ public class GameActivity extends AppCompatActivity {
     LinearLayout playersGameLayout;
 
     //Массив ImageView игроков в Активности (не путать с ImageView игрока)
-    ArrayList<ImageView> playersIvList = new ArrayList<ImageView>();
+    ArrayList<ImageButton> playersIbList = new ArrayList<ImageButton>();
 
     //Массив TextView игроков в Актисности
     ArrayList<TextView> playersTvList = new ArrayList<TextView>();
@@ -49,6 +46,9 @@ public class GameActivity extends AppCompatActivity {
     //Размер лейаута на 1 игрока
     private int playerLayoutWidth;
 
+    //ImageView активного игрока
+    private ImageView activePlayerIv;
+
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +56,12 @@ public class GameActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Integer playersCount = intent.getIntExtra("playersCount", 3);
 
+            BetMeUpApp app = ((BetMeUpApp) getApplicationContext());
         //Создаем игру
-        game = new Game(playersCount);
+
+        app.createGame(playersCount, this);
+            game = Game.getInstance();
+
         setContentView(R.layout.activity_game);
         //Находим родительский лейаут для вставки леейаутов игроков
         playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
@@ -68,12 +72,14 @@ public class GameActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "width: " + dpWidth);
             Log.d(LOG_TAG, "height: " + dpHeight);
             Log.d(LOG_TAG, "scale=" + scale);
-
+        //Устанавливаем размер Лейаута в списке игроков
         playerLayoutWidth = (int) (dpHeight / playersCount * scale);
 
-
+        //Находим изображение активного игрока (кто делает ход)
+        activePlayerIv = (ImageView) findViewById(R.id.ivActivePlayer_game_activity);
         LayoutInflater inflater = LayoutInflater.from(this);
-
+            // Создаем игроков и формирем их Лейауты
+            //todo Возможно вынести в отдельный метод
         for (int i = 0; i < playersCount; i++) {
             game.helper.makePlayer(i, game, getApplicationContext());
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.game_player_layout, playersGameLayout, true);
@@ -82,45 +88,40 @@ public class GameActivity extends AppCompatActivity {
                 //Находим дочерние элементы для каждого лейаута игрока, обновляем содержимое и добавляем в массив
             for (int index = 0; index < ((ViewGroup) playerLayout).getChildCount(); ++index) {
                 View nextChild = ((ViewGroup) playerLayout).getChildAt(index);
+                    //todo Попробовать использовать для ImageButton разные изображения для разных статусов https://developer.android.com/reference/android/widget/ImageButton.html
                 if (nextChild instanceof ImageView) {
-                    ImageView iv = (ImageView) nextChild;
-                    Log.d(LOG_TAG, "ID-" + iv.getId());
+                    //Обновляем картинку игрока
+                    ImageButton ib = (ImageButton) nextChild;
                     // Вопрос - если добавить сначла в массив а потом изменить SRC изменится ли SRC у элемента в массиве
                     //Получаем идентификатор картинки и добавляем его в ИмеджВью Лейаута игрока
                     int resId = this.getResources().getIdentifier(game.players[i].playerImageSrc, null, this.getPackageName());
-                    iv.setImageResource(resId);
-                    iv.getLayoutParams().width =  playerLayoutWidth;
-                    iv.getLayoutParams().height = playerLayoutWidth;
-                    playersIvList.add(iv);
+                    ib.setImageResource(resId);
+                    //Обновляем размеры картинки, чтобы влезли все картинки игроков.
+                    //todo Ограничить максимальный размер картинки и распределить игроков по экрану
+                    ib.getLayoutParams().width =  playerLayoutWidth;
+                    ib.getLayoutParams().height = playerLayoutWidth;
+                    playersIbList.add(ib);
+
+                } else if (nextChild instanceof TextView) {
+                    //Обновляем имя игрока и его счет  (пока TextView)
+                    TextView tv = (TextView) nextChild;
+                    int tvId = tv.getId();
+                    if(tvId == R.id.tvPlayerName_game_player_layout) {
+                            tv.setText(game.players[i].name);
+                    } else if (tvId == R.id.playerAccountAmount_game_player_layout) {
+                        tv.setText(getString(R.string.acc) + " " + String.valueOf(game.players[i].account.amount));
+                    }
+
                 }
+
             }
 
 
         }
+        //EOF цикла
+            //Выбираем первого игрока
+            setActivePlayer(0);
 
-        /*
-        //Инициализируем игроков и лейауты
-        playerLayouts = new RelativeLayout[playersCount];
-        for (int i = 0; i < playersCount; i++) {
-            game.helper.makePlayer(i, game, getApplicationContext());
-            makeRelativeLayout(getString(R.string.player_layout_prefix) + i, i);
-        }
-
-        */
-
-        /*
-        //Подключаем лейауты игроков к основному лейауту
-        for (int i = 0; i < game.players.length; i++) {
-            game.players[i].playerImage.getLayoutParams().height = 40;
-            game.players[i].playerImage.getLayoutParams().width = 40;
-            playerLayouts[i].addView(game.players[i].playerImage);
-            playerLayouts[i].setBackgroundColor(Color.parseColor("#FF0000"));
-            Log.d (LOG_TAG, "Width: " + playerLayouts[i].getWidth() + " Height: " + playerLayouts[i].getHeight());
-            playersGameLayout.addView(playerLayouts[i]);
-        }
-        */
-
-        //  Добавили все лейауты, задаем контентвью;
 
     }
 
@@ -157,9 +158,23 @@ public class GameActivity extends AppCompatActivity {
      *
      */
 
+//Устанавливаем изображение (Сверху в центре) активного игрока
+private void setActivePlayer(int apId) {
+    game.activePlayer = apId;
+    int resId = this.getResources().getIdentifier(game.players[apId].playerImageSrc, null, this.getPackageName());
+    activePlayerIv.setImageResource(resId);
+}
 
-
-
+   public void doTurn(View v) {
+       game.setTurnCategory();
+       //tv must be final to be used in inner class - для того чтобы исчезало через 3 секунды
+       // http://stackoverflow.com/questions/11424753/why-do-variables-passed-to-runnable-need-to-be-final
+       final TextView tv =  (TextView) findViewById(R.id.tvActivityCategory_activity_game);
+       tv.setVisibility(View.VISIBLE);
+       tv.setText(game.getTurnCategory());
+       //tv исчезает
+       tv.postDelayed(new Runnable() { public void run() { tv.setVisibility(View.GONE); } }, 3000);
+}
 
 
 }

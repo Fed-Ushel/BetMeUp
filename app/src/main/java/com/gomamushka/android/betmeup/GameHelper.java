@@ -20,8 +20,11 @@ import java.util.Random;
 
 /**
  * Created by F_Aredakov on 01.12.2016.
+ * Singleton class GameHelper
  */
 public class GameHelper {
+
+    private static GameHelper helper;
     //Размер экрана активности в DP
     public int dpHeight;
     public int dpWidth;
@@ -32,11 +35,33 @@ public class GameHelper {
     private ArrayList<Integer> usedImagesNum = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
 
     //Объект  rand для генерации случайных чисел во время игры
-    private static Random rand = new Random();
+    private Random rand = new Random();
 
     //Префикс файла изображения и их папка
     private static final String IMG_PREFIX = "natur";
     private static final String IMG_FOLDER = "drawable/";
+
+    //Граней на кубике отвечающих за категорию вопроса
+     static final Integer DOTS_CATEGORY = 4;
+
+    //Инициализируем экземпляр
+    public static void initInstance() {
+
+        if (helper == null) {
+            helper = new GameHelper();
+        }
+    }
+
+    public static GameHelper getInstance() {
+        Log.d("FED", "MySingleton::getInstance()");
+        return helper;
+    }
+
+    private GameHelper () {
+
+    }
+
+
 
     //Создаем ImageView по его src и ID из файла ids.xml
     public static ImageView makeImageView (String id, String src, ViewGroup.LayoutParams lp, Context context) {
@@ -89,9 +114,9 @@ public class GameHelper {
         // Для ресурсов приложения обязателен контекст context.getResources()
         String id =  context.getResources().getString(R.string.player_image_prefix) + (i+1) + context.getResources().getString(R.string.player_image_suffix);
         String imSrc = choosePlayerImageSrc();
-
-        ImageView iv = GameHelper.makeImageView(id,imSrc , new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT),context);
-        game.players[i] = new Player(context.getResources().getString(R.string.player)+(i+1), iv, imSrc);
+        // ImageView игрока не используется, вместо это  используется ImageSRC
+      //  ImageView iv = GameHelper.makeImageView(id,imSrc , new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT),context);
+        game.players[i] = new Player(context.getResources().getString(R.string.player)+(i+1), imSrc);
     }
 
 
@@ -103,4 +128,16 @@ public class GameHelper {
         return (IMG_FOLDER + IMG_PREFIX  + imgNum.toString());
     }
 
+
+    public Integer rollCategoryDice() {
+        return (rand.nextInt(DOTS_CATEGORY));
+    }
+
+    //Таймер
+    public void waitSec(int sec) {
+        try {
+            Thread.sleep(sec * 1000);
+        } catch (InterruptedException e) {
+        }
+    }
 }

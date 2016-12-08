@@ -24,10 +24,10 @@ public class Player {
     public int luck;
     public int intelligence;
 
-    public Player(String name, ImageView iv, String pi) {
+    public Player(String name, String pi) {
         this.bet = 0;
         this.name = name;
-        this.playerImage = iv;
+     //   this.playerImage = iv;
         this.playerImageSrc = pi;
         this.account = new Account();
     }

@@ -5,6 +5,12 @@
     <string name="rules">Правила</string>
     <string name="players">Игроков: %1$s</string>
     <string name="player">Игрок </string>
+    <string name="acc">Счет: </string>
     <string name="input_player_bet">Ваша ставка:</string>
+    <!-- Activity category -->
+    <string name="strength_category">Сила</string>
+    <string name="dexterity_category">Ловкость</string>
+    <string name="luck_category">Удача</string>
+    <string name="intelligence_category">Интеллект</string>
 
 </resources>
