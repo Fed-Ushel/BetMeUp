@@ -130,7 +130,10 @@ public class GameHelper {
 
 
     public Integer rollCategoryDice() {
-        return (rand.nextInt(DOTS_CATEGORY));
+        int x = rand.nextInt(DOTS_CATEGORY);
+
+        Log.d (LOG_TAG, "Rand " + x);
+        return x;
     }
 
     //Таймер

@@ -29,13 +29,23 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:visibility="gone"
-                android:text="Medium Text"
+                android:text="Category Text"
                 android:id="@+id/tvActivityCategory_activity_game"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/ivActivePlayer_game_activity"
                 android:layout_marginLeft="100dp"
                 android:layout_marginStart="100dp"/>
-
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:visibility="gone"
+                android:text="Task Text"
+                android:id="@+id/tvTaskText_activity_game"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/ivActivePlayer_game_activity"
+                android:layout_marginLeft="100dp"
+                android:layout_marginStart="100dp"/>
 
     </RelativeLayout>
 

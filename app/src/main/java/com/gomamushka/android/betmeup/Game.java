@@ -18,21 +18,26 @@ public class Game {
     Integer numOfPlayers;
     public int activePlayer;
     private Boolean isFinished = false; //Закончилась ли игра
-    private Integer turnCount;   //Количество ходов
-    private Integer totalTurnBet; //Суммарная ставка на ход
+    public Integer turnCount;   //Количество ходов
+    public String turnTask; //Задание на ход
+    public Integer turnTime; //Время на выполнение задания
+    public Integer totalTurnBet; //Суммарная ставка на ход
     public Integer turnCategory; // Категория вопроса
 
     //Добавляем к объекту helper
     GameHelper helper = GameHelper.getInstance();
 
+    //Получаем доступ к переменным и методам приложения
+    private BetMeUpApp app;
+
     public String[] activityCategory;
 
         /* Задания для игры. Вынести в базу данных
         У  Заданий 4 категории:
-        - Сила
-        - Ловкость
-        - Удача
-         - Интеллект
+        - 1  Сила
+        - 2 Ловкость
+        - 3 Удача
+         -4 Интеллект
          Атрибуты задания
          1 - категория
          2- категория возраста
@@ -42,8 +47,7 @@ public class Game {
          6 - время на исполнение
      */
         public static void initInstance(Integer num, Context c) {
-            Log.d("FED", "MySingleton::InitInstance()");
-            if (game == null) {
+             if (game == null) {
                 game = new Game(num,c);
             }
         }
@@ -58,20 +62,35 @@ public class Game {
         turnCount = 1;
         totalTurnBet = 0;
         activePlayer = 1;
+        //Получаем доступ к методам и переменным приложения
+        app = ((BetMeUpApp) c);
 
        activityCategory = new String[4];
-        activityCategory[0] = c.getString(R.string.dexterity_category);
-        activityCategory[1] = c.getString(R.string.intelligence_category);
+        activityCategory[0] = c.getString(R.string.strength_category);
+        activityCategory[1] = c.getString(R.string.dexterity_category);
         activityCategory[2] = c.getString(R.string.luck_category);
-        activityCategory[3] = c.getString(R.string.strength_category);
-
+        activityCategory[3] = c.getString(R.string.intelligence_category);
 
     }
-
-    //Устанавливаем категорию вопроса
-    public void setTurnCategory () {
+    //Делаем ход
+    public void doTurn () {
+        String[] taskStrings = new String[5];
+        setTurnCategory();
+        //todo Берем количество не выпадавших заданий по категории (_ID выпадавших надо хранить в массиве) и выбираем случайное задание
+        taskStrings = app.dbh.selectRandomTaskbyCategory(app.db, this.turnCategory);
+        this.turnTask = taskStrings[1];
+        this.turnTime = Integer.valueOf(taskStrings[4]);
+    }
+    //Выбрасываем кубик категрии
+    private void setTurnCategory () {
         this.turnCategory = this.helper.rollCategoryDice();
     }
+
+
+
+
+
+
     public String getTurnCategory () {
         return activityCategory[this.turnCategory];
     }

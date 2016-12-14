@@ -55,12 +55,17 @@ public class GameActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Integer playersCount = intent.getIntExtra("playersCount", 3);
-
+            //Используем методы и переменные приложения BetMeUp
             BetMeUpApp app = ((BetMeUpApp) getApplicationContext());
+            //Получаем доступ к БД через класс приложения BetMeUp -app.db
+
+
         //Создаем игру
 
-        app.createGame(playersCount, this);
+        app.createGame(playersCount, getApplicationContext());
             game = Game.getInstance();
+
+
 
         setContentView(R.layout.activity_game);
         //Находим родительский лейаут для вставки леейаутов игроков
@@ -144,19 +149,6 @@ public class GameActivity extends AppCompatActivity {
 */
 
 
-    //todo Переделать? класс GameHelper в статический в соответствии с решением
-
-    /**
-     *
-     *                         Java has static nested classes but it sounds like you're looking for a top-level static class. Java has no way of making a top-level class static but you can simulate a static class like this:
-     Declare your class final - Prevents extension of the class since extending a static class makes no sense
-     Make the constructor private - Prevents instantiation by client code as it makes no sense to instantiate a static class
-     Make all the members and functions of the class static - Since the class cannot be instantiated no instance methods can be called or instance fields accessed
-     Note that the compiler will not prevent you from declaring an instance (non-static) member. The issue will only show up if you attempt to call the instance member
-     *
-     *
-     *
-     */
 
 //Устанавливаем изображение (Сверху в центре) активного игрока
 private void setActivePlayer(int apId) {
@@ -166,15 +158,21 @@ private void setActivePlayer(int apId) {
 }
 
    public void doTurn(View v) {
-       game.setTurnCategory();
+       game.doTurn();
        //tv must be final to be used in inner class - для того чтобы исчезало через 3 секунды
        // http://stackoverflow.com/questions/11424753/why-do-variables-passed-to-runnable-need-to-be-final
        final TextView tv =  (TextView) findViewById(R.id.tvActivityCategory_activity_game);
+       final TextView taskTextView = (TextView) findViewById(R.id.tvTaskText_activity_game);
+
+
        tv.setVisibility(View.VISIBLE);
+       taskTextView.setVisibility(View.GONE);
        tv.setText(game.getTurnCategory());
+       taskTextView.setText(game.turnTask);
        //tv исчезает
        tv.postDelayed(new Runnable() { public void run() { tv.setVisibility(View.GONE); } }, 3000);
-}
+       taskTextView.postDelayed(new Runnable() { public void run() { taskTextView.setVisibility(View.VISIBLE); } }, 4000);
 
+}
 
 }
