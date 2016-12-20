@@ -210,8 +210,7 @@ public class DbHelper extends SQLiteOpenHelper {
             taskStrings[3] = c.getString(c.getColumnIndex("image_url"));
             taskStrings[4] = c.getString(c.getColumnIndex("timer"));
         }
-        Log.d (LOG_TAG, "Таск " + taskStrings[1] + " Время " + taskStrings[4]);
-        return taskStrings;
+         return taskStrings;
     }
 
     //Получаем XML данные для БД из файла tasks_data_ru в папке res/xml

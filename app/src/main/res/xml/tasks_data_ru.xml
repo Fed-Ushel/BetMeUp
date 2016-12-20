@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Data xmlns:android="http://schemas.android.com/apk/res/android">
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>1</age_category>
+        <task_name>Сможет ли игрок придумать 4 рифмы к слову "Майка"</task_name>
+        <solution/>
+        <image_url/>
+        <timer>60</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>2</age_category>
+        <task_name>Сможет ли игрок придумать 2 рифмы к слову "Майка"</task_name>
+        <solution/>
+        <image_url/>
+        <timer>60</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>1</age_category>
+        <task_name>Сможет ли игрок назвать 5 женских имен на букву "М"</task_name>
+        <solution/>
+        <image_url/>
+        <timer>60</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>2</age_category>
+        <task_name>Сможет ли игрок назвать 3 женских имени на букву "М"</task_name>
+        <solution/>
+        <image_url/>
+        <timer>60</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>2</task_category>
+        <age_category>3</age_category>
+        <task_name>Сможет ли игрок найти 4 предмета на букву С?
+            Все предметы должны быть на столе до истечения времени.</task_name>
+        <solution/>
+        <image_url/>
+        <timer>120</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>2</task_category>
+        <age_category>1</age_category>
+        <task_name>Сможет ли игрок положить себе на тыльную часть кисти три авторучки, подбросить их в воздух и поймать все авторучки 4 раза из 5 попыток?</task_name>
+        <solution/>
+        <image_url>task_1</image_url>
+        <timer>120</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>2</task_category>
+        <age_category>2</age_category>
+        <task_name>Сможет ли игрок положить себе на тыльную часть кисти три авторучки, подбросить их в воздух и поймать все авторучки 3 раза из 5 попыток?</task_name>
+        <solution/>
+        <image_url>task_1</image_url>
+        <timer>120</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>3</age_category>
+        <task_name>Сможет ли игрок угадать, какой предмет загадали другие игроки, задав 6 вопросов, на которые можно ответить только "да" или "нет"?</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>3</age_category>
+        <task_name>Сможет ли игрок остаться серьезным, когда другие игроки будут стараться рассмешить его?
+            Другие игроки не должны прикосаться к выполняющему задание.</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>1</age_category>
+        <task_name>Сможет ли игрок правильно угадать рост игрока, сидящего справа от него с погрешностью в 3 см?
+            Игрок, рост которого будут угадывать, должен записать его на листке перед тем, как будут сделаны ставки.</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>4</task_category>
+        <age_category>2</age_category>
+        <task_name>Сможет ли игрок правильно угадать рост игрока, сидящего справа от него с погрешностью в 10 см?
+            Игрок, рост которого будут угадывать, должен записать его на листке перед тем, как будут сделаны ставки.</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>3</task_category>
+        <age_category>3</age_category>
+        <task_name>Сможет ли игрок победить в камень-ножницы-бумага игрока, сидящего с права от него в трех раундах?</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>3</task_category>
+        <age_category>3</age_category>
+        <task_name>Сможет ли игрок выкинуть самое большое число на кубике из всех игроков с первой попытки?</task_name>
+        <solution/>
+        <image_url/>
+        <timer>180</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>1</task_category>
+        <age_category>1</age_category>
+        <task_name>Сможет ли игрок отжаться от пола 20 раз?</task_name>
+        <solution/>
+        <image_url/>
+        <timer>30</timer>
+    </betmeup_task>
+    <betmeup_task>
+        <task_category>1</task_category>
+        <age_category>2</age_category>
+        <task_name>Сможет ли игрок отжаться от пола 10 раз?</task_name>
+        <solution/>
+        <image_url/>
+        <timer>30</timer>
+    </betmeup_task>
+</Data>

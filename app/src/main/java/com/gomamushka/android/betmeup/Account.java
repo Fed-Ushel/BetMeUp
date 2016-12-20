@@ -10,4 +10,8 @@ public class Account {
     public Account () {
         amount = 100;
     }
+
+    public void reduceAmount (int quantity) {
+        this.amount = this.amount - quantity;
+    }
 }

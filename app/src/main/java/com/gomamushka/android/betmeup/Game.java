@@ -16,10 +16,13 @@ public class Game {
 
     Player[] players;
     Integer numOfPlayers;
-    public int activePlayer;
+
+    public int activePlayerId;
+    public Player activePlayer;
+
     private Boolean isFinished = false; //Закончилась ли игра
     public Integer turnCount;   //Количество ходов
-    public String turnTask; //Задание на ход
+    private String turnTask; //Задание на ход
     public Integer turnTime; //Время на выполнение задания
     public Integer totalTurnBet; //Суммарная ставка на ход
     public Integer turnCategory; // Категория вопроса
@@ -61,7 +64,13 @@ public class Game {
         players = new Player[num];
         turnCount = 1;
         totalTurnBet = 0;
-        activePlayer = 1;
+
+        //Создаем игроков
+        for (int i = 0; i < numOfPlayers; i++) {
+            this.helper.makePlayer(i, this, c);
+        }
+
+
         //Получаем доступ к методам и переменным приложения
         app = ((BetMeUpApp) c);
 
@@ -80,7 +89,10 @@ public class Game {
         taskStrings = app.dbh.selectRandomTaskbyCategory(app.db, this.turnCategory);
         this.turnTask = taskStrings[1];
         this.turnTime = Integer.valueOf(taskStrings[4]);
+
     }
+
+
     //Выбрасываем кубик категрии
     private void setTurnCategory () {
         this.turnCategory = this.helper.rollCategoryDice();
@@ -94,4 +106,10 @@ public class Game {
     public String getTurnCategory () {
         return activityCategory[this.turnCategory];
     }
+
+    public String getTurnTask() {
+        return this.turnTask;
+    }
 }
+
+

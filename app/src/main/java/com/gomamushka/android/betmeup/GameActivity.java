@@ -9,6 +9,9 @@ package com.gomamushka.android.betmeup;
  */
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,8 +29,13 @@ import android.widget.*;
 import java.util.ArrayList;
 
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity   implements DialogTask.NoticeDialogListener{
     private final String LOG_TAG = "FED";
+    //Устанавливаем начальные значения ID для View игроков
+    //todo Нужно ограничить диапазон поиска ID как указано http://stackoverflow.com/questions/8460680/how-can-i-assign-an-id-to-a-view-programmatically
+    private final int playersViewNameId = 1000;
+    private final int playersViewAccId = 1100;
+
     //Размер экрана активности в DP
     public int dpHeight;
     public int dpWidth;
@@ -40,8 +48,8 @@ public class GameActivity extends AppCompatActivity {
     //Массив TextView игроков в Актисности
     ArrayList<TextView> playersTvList = new ArrayList<TextView>();
 
-    //новая игра
-    public Game game;
+    // игра
+    private Game game;
 
     //Размер лейаута на 1 игрока
     private int playerLayoutWidth;
@@ -59,16 +67,14 @@ public class GameActivity extends AppCompatActivity {
             BetMeUpApp app = ((BetMeUpApp) getApplicationContext());
             //Получаем доступ к БД через класс приложения BetMeUp -app.db
 
-
         //Создаем игру
 
         app.createGame(playersCount, getApplicationContext());
             game = Game.getInstance();
-
-
-
         setContentView(R.layout.activity_game);
         //Находим родительский лейаут для вставки леейаутов игроков
+
+
         playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
         // Получаем размеры экрана активности
         final float scale =  getResources().getDisplayMetrics().density;
@@ -83,10 +89,9 @@ public class GameActivity extends AppCompatActivity {
         //Находим изображение активного игрока (кто делает ход)
         activePlayerIv = (ImageView) findViewById(R.id.ivActivePlayer_game_activity);
         LayoutInflater inflater = LayoutInflater.from(this);
-            // Создаем игроков и формирем их Лейауты
-            //todo Возможно вынести в отдельный метод
+
+            // Формирем лейауты игроков
         for (int i = 0; i < playersCount; i++) {
-            game.helper.makePlayer(i, game, getApplicationContext());
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.game_player_layout, playersGameLayout, true);
             View playerLayout = ((ViewGroup) layout).getChildAt(i);
 
@@ -113,8 +118,11 @@ public class GameActivity extends AppCompatActivity {
                     int tvId = tv.getId();
                     if(tvId == R.id.tvPlayerName_game_player_layout) {
                             tv.setText(game.players[i].name);
+                            tv.setId(playersViewNameId + i);
                     } else if (tvId == R.id.playerAccountAmount_game_player_layout) {
                         tv.setText(getString(R.string.acc) + " " + String.valueOf(game.players[i].account.amount));
+                        tv.setId(playersViewAccId + i);
+                        Log.d(LOG_TAG, "ID: " + (playersViewAccId + i));
                     }
 
                 }
@@ -152,7 +160,8 @@ public class GameActivity extends AppCompatActivity {
 
 //Устанавливаем изображение (Сверху в центре) активного игрока
 private void setActivePlayer(int apId) {
-    game.activePlayer = apId;
+    game.activePlayerId = apId;
+    game.activePlayer = game.players[apId];
     int resId = this.getResources().getIdentifier(game.players[apId].playerImageSrc, null, this.getPackageName());
     activePlayerIv.setImageResource(resId);
 }
@@ -168,11 +177,80 @@ private void setActivePlayer(int apId) {
        tv.setVisibility(View.VISIBLE);
        taskTextView.setVisibility(View.GONE);
        tv.setText(game.getTurnCategory());
-       taskTextView.setText(game.turnTask);
+       taskTextView.setText(game.getTurnTask());
        //tv исчезает
        tv.postDelayed(new Runnable() { public void run() { tv.setVisibility(View.GONE); } }, 3000);
        taskTextView.postDelayed(new Runnable() { public void run() { taskTextView.setVisibility(View.VISIBLE); } }, 4000);
 
-}
+       showTask();
 
+}
+    private void showTask() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialogTask");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        // добавляем фрагменг в бэк стек - в нашем слуаче недобавляем
+        // ft.addToBackStack(null);
+        // Create and show the dialog.
+        DialogFragment dialogTask =  new DialogTask();
+        //из фрагмента нельзя выйти кнопкой назад
+        dialogTask.setCancelable(false);
+        dialogTask.show(ft, "dialogTask");
+    }
+
+    // Возвращаем данные из диалога
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Log.d(LOG_TAG, "Позитив");
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+
+        Log.d(LOG_TAG, "У игрока : " + (playersViewAccId + game.activePlayerId));
+        @SuppressWarnings("ResourceType") TextView tv = (TextView) findViewById(playersViewAccId + game.activePlayerId);
+        Log.d(LOG_TAG, "У икрока:  " + game.activePlayer.account.amount);
+        String st = Integer.toString(game.activePlayer.account.amount);
+        tv.setText(st);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(LOG_TAG, "MainActivity: onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "MainActivity: onResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "MainActivity: onPause()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(LOG_TAG, "MainActivity: onStop()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "MainActivity: onDestroy()");
+    }
 }

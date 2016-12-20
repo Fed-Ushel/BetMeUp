@@ -14,7 +14,8 @@
     <!-- Placeholder for Active Player View.  -->
     <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent"
                     android:background="#0099cc"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:id="@+id/root_activity_game">
         <ImageButton android:layout_width="wrap_content" android:layout_height="wrap_content"
                      android:src="@drawable/natur1"
                      android:background="@null"
