@@ -12,11 +12,13 @@
     <string name="dexterity_category">Ловкость</string>
     <string name="luck_category">Удача</string>
     <string name="intelligence_category">Интеллект</string>
+    <!-- Activity game -->
+    <string name="start_timer">Старт</string>
 
 
     <!--Task-Dialog -->
     <string name="button_accept_task">Берусь</string>
     <string name="button_decline_task">Не осилю.\n - %1$s монет.</string>
     <string name="task">Задание</string>
-
+    <string name="bettext">Ваша ставка</string>
 </resources>

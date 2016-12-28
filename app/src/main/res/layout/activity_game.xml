@@ -39,7 +39,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:visibility="gone"
                 android:text="Task Text"
                 android:id="@+id/tvTaskText_activity_game"
@@ -47,6 +47,17 @@
                 android:layout_toRightOf="@id/ivActivePlayer_game_activity"
                 android:layout_marginLeft="100dp"
                 android:layout_marginStart="100dp"/>
+        <Button android:layout_width="wrap_content"
+                android:id="@+id/btStartTimer_game_activity"
+                android:text="@string/start_timer"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:visibility="gone"
+                android:onClick="startTimer"
+                android:layout_toRightOf="@id/ivActivePlayer_game_activity"
+                android:layout_marginLeft="50dp"
+                android:layout_marginStart="50dp"
+        />
 
     </RelativeLayout>
 

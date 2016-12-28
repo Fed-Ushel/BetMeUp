@@ -10,8 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.content.res.Resources;
+
+import java.util.Arrays;
 
 /**
  * Created by F_Aredakov on 19.12.2016.
@@ -21,8 +24,21 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
         private Integer cancelBet;
         private String pTask;
         private Resources res;
+        private Integer dialogType;
+        private View v;
+
     // игра
     private Game game;
+//Создаем новый объект и передаем в него аргуемент - тип диалога
+    //todo Для разных диалогов использовать один класс с параметром или несколько?
+    public static final DialogTask newInstance(int type)
+    {
+        DialogTask f = new DialogTask();
+        Bundle bdl = new Bundle(1);
+        bdl.putInt("DIALOG_TYPE", type);
+        f.setArguments(bdl);
+        return f;
+    }
 
     /* The activity that creates an instance of this dialog fragment must
  * implement this interface in order to receive event callbacks.
@@ -80,25 +96,51 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         game = Game.getInstance();
+       this.dialogType = getArguments().getInt("DIALOG_TYPE");
 
-        //передаем в диалоговое окно сумму счета и текст задания (из экземпляра класса Game)
+       switch (this.dialogType) {
+           //Диалог выбора задания
+           case 1:
+               //передаем в диалоговое окно сумму счета и текст задания (из экземпляра класса Game)
+               cancelBet = game.activePlayer.account.amount / 10;
+               getDialog().setTitle(R.string.task);
 
-        cancelBet = game.activePlayer.account.amount / 10;
-        getDialog().setTitle(R.string.task);
-
-        View v = inflater.inflate(R.layout.task_dialog, null);
-        TextView tv = (TextView) v.findViewById(R.id.textTask_dialog_layout);
-       tv.setText(game.getTurnTask());
+               v = inflater.inflate(R.layout.task_dialog, null);
+               TextView tv = (TextView) v.findViewById(R.id.textTask_dialog_layout);
+               tv.setText(game.getTurnTask());
 
 
-        Button cancelButton = (Button) v.findViewById(R.id.btnNo_dialog_layout);
-        //Добавляем сумму штрафа за отмену на кнопку
-         res = getResources();
-         String text = res.getString(R.string.button_decline_task, cancelBet );
-        cancelButton.setText(text);
-        cancelButton.setOnClickListener(this);
-        v.findViewById(R.id.btnYes_dialog_layout).setOnClickListener(this);
-        return v;
+               Button cancelButton = (Button) v.findViewById(R.id.btnNo_dialog_layout);
+               //Добавляем сумму штрафа за отмену на кнопку
+               res = getResources();
+               String text = res.getString(R.string.button_decline_task, cancelBet );
+               cancelButton.setText(text);
+               cancelButton.setOnClickListener(this);
+               v.findViewById(R.id.btnYes_dialog_layout).setOnClickListener(this);
+
+               break;
+
+           //Ставка игрока
+           case 2:
+               getDialog().setTitle(game.betPlayer.name + ": " + R.string.bettext);
+               v = inflater.inflate(R.layout.bet_layout, null);
+               NumberPicker numberPicker = (NumberPicker) v.findViewById(R.id.numberPickerBet);
+               int min = game.betPlayer.account.amount / 10;
+               int max = game.betPlayer.account.amount / 2;
+               int step = 10;
+
+               String[] myValues = game.helper.getArrayWithSteps(min, max, step); //get the values with steps... Normally
+                Log.d("FED", "Массив: " + Arrays.toString(myValues));
+                //Setting the NumberPick
+               numberPicker.setMinValue(0);
+               numberPicker.setMaxValue((max-step)/min+1); //Like iStepsArray in the function
+               numberPicker.setDisplayedValues(myValues);//put on NumberPicker
+
+       }
+
+
+       return v;
+
     }
 
 

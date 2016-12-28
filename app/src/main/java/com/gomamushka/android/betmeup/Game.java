@@ -19,6 +19,7 @@ public class Game {
 
     public int activePlayerId;
     public Player activePlayer;
+    public Player betPlayer;
 
     private Boolean isFinished = false; //Закончилась ли игра
     public Integer turnCount;   //Количество ходов
@@ -88,7 +89,10 @@ public class Game {
         //todo Берем количество не выпадавших заданий по категории (_ID выпадавших надо хранить в массиве) и выбираем случайное задание
         taskStrings = app.dbh.selectRandomTaskbyCategory(app.db, this.turnCategory);
         this.turnTask = taskStrings[1];
-        this.turnTime = Integer.valueOf(taskStrings[4]);
+        this.turnTime = 180;
+        if (Integer.valueOf(taskStrings[4]) != 0) {
+            this.turnTime = Integer.valueOf(taskStrings[4]);
+        }
 
     }
 

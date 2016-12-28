@@ -42,6 +42,10 @@ public class GameActivity extends AppCompatActivity   implements DialogTask.Noti
     //Родительский лейаут для лейаутов игроков
     LinearLayout playersGameLayout;
 
+    TextView tv;
+    TextView taskTextView;
+    Button startTimer;
+
     //Массив ImageView игроков в Активности (не путать с ImageView игрока)
     ArrayList<ImageButton> playersIbList = new ArrayList<ImageButton>();
 
@@ -76,6 +80,13 @@ public class GameActivity extends AppCompatActivity   implements DialogTask.Noti
 
 
         playersGameLayout = (LinearLayout) findViewById(R.id.playersGameLayout);
+
+            //Находим элементы экрана
+            tv =  (TextView) findViewById(R.id.tvActivityCategory_activity_game);
+            taskTextView = (TextView) findViewById(R.id.tvTaskText_activity_game);
+            startTimer = (Button) findViewById(R.id.btStartTimer_game_activity);
+
+
         // Получаем размеры экрана активности
         final float scale =  getResources().getDisplayMetrics().density;
         dpWidth = game.helper.getScreenWidth(this);
@@ -170,10 +181,8 @@ private void setActivePlayer(int apId) {
        game.doTurn();
        //tv must be final to be used in inner class - для того чтобы исчезало через 3 секунды
        // http://stackoverflow.com/questions/11424753/why-do-variables-passed-to-runnable-need-to-be-final
-       final TextView tv =  (TextView) findViewById(R.id.tvActivityCategory_activity_game);
-       final TextView taskTextView = (TextView) findViewById(R.id.tvTaskText_activity_game);
 
-
+       startTimer.setVisibility(View.GONE);
        tv.setVisibility(View.VISIBLE);
        taskTextView.setVisibility(View.GONE);
        tv.setText(game.getTurnCategory());
@@ -182,26 +191,29 @@ private void setActivePlayer(int apId) {
        tv.postDelayed(new Runnable() { public void run() { tv.setVisibility(View.GONE); } }, 3000);
        taskTextView.postDelayed(new Runnable() { public void run() { taskTextView.setVisibility(View.VISIBLE); } }, 4000);
 
-       showTask();
+       showMyDialog(1, "dialogTask");
 
 }
-    private void showTask() {
+    private void showMyDialog(int id, String fragmentName) {
         // DialogFragment.show() will take care of adding the fragment
         // in a transaction.  We also want to remove any currently showing
         // dialog, so make our own transaction and take care of that here.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialogTask");
+        Fragment prev = getFragmentManager().findFragmentByTag(fragmentName);
         if (prev != null) {
             ft.remove(prev);
         }
         // добавляем фрагменг в бэк стек - в нашем слуаче недобавляем
         // ft.addToBackStack(null);
         // Create and show the dialog.
-        DialogFragment dialogTask =  new DialogTask();
+        DialogFragment dialogTask =  DialogTask.newInstance(id);
         //из фрагмента нельзя выйти кнопкой назад
         dialogTask.setCancelable(false);
-        dialogTask.show(ft, "dialogTask");
+        dialogTask.show(ft, fragmentName);
     }
+
+
+
 
     // Возвращаем данные из диалога
     // The dialog fragment receives a reference to this Activity through the
@@ -209,7 +221,15 @@ private void setActivePlayer(int apId) {
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        Log.d(LOG_TAG, "Позитив");
+        //startTimer.setVisibility(View.VISIBLE);
+        for (Player player : game.players) {
+            if (player != game.activePlayer) {
+                Log.d(LOG_TAG, "Player: " +player);
+
+                game.betPlayer = player;
+                showMyDialog(2, "betDialog");
+            }
+        }
     }
 
     @Override
@@ -218,11 +238,16 @@ private void setActivePlayer(int apId) {
 
         Log.d(LOG_TAG, "У игрока : " + (playersViewAccId + game.activePlayerId));
         @SuppressWarnings("ResourceType") TextView tv = (TextView) findViewById(playersViewAccId + game.activePlayerId);
-        Log.d(LOG_TAG, "У икрока:  " + game.activePlayer.account.amount);
+
         String st = Integer.toString(game.activePlayer.account.amount);
         tv.setText(st);
 
     }
+
+    public void startTimer (View v) {
+        Log.d(LOG_TAG, "Запускаем таймер:  " + game.turnTime);
+    }
+
 
     @Override
     protected void onStart() {
