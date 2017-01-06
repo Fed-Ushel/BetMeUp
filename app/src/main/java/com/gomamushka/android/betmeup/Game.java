@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 /**
  * Created by F_Aredakov on 24.11.2016.
  */
@@ -14,15 +17,18 @@ public class Game {
 
 
 
-    Player[] players;
-    Integer numOfPlayers;
+    protected Player[] players;
+    protected Integer numOfPlayers;
 
-    public int activePlayerId;
-    public Player activePlayer;
-    public Player betPlayer;
+    protected int activePlayerId;
+    protected Player activePlayer;
+    protected Player betPlayer;
+
+    protected boolean isAllPlayersSet = false;// Все ли игроки сделали ставки
+
 
     private Boolean isFinished = false; //Закончилась ли игра
-    public Integer turnCount;   //Количество ходов
+    protected Integer turnCount;   //Количество ходов
     private String turnTask; //Задание на ход
     public Integer turnTime; //Время на выполнение задания
     public Integer totalTurnBet; //Суммарная ставка на ход
@@ -33,6 +39,9 @@ public class Game {
 
     //Получаем доступ к переменным и методам приложения
     private BetMeUpApp app;
+
+    //Инициализируем активность чтобы получить к ней доступ из другого класса
+    private GameActivity gameActivity;
 
     public String[] activityCategory;
 
@@ -53,7 +62,8 @@ public class Game {
         public static void initInstance(Integer num, Context c) {
              if (game == null) {
                 game = new Game(num,c);
-            }
+
+             }
         }
 
     public static Game getInstance() {
@@ -72,6 +82,7 @@ public class Game {
         }
 
 
+
         //Получаем доступ к методам и переменным приложения
         app = ((BetMeUpApp) c);
 
@@ -82,20 +93,22 @@ public class Game {
         activityCategory[3] = c.getString(R.string.intelligence_category);
 
     }
-    //Делаем ход
-    public void doTurn () {
+    //Выбираем задачу и время на решение
+    public void setTurnTask () {
         String[] taskStrings = new String[5];
         setTurnCategory();
         //todo Берем количество не выпадавших заданий по категории (_ID выпадавших надо хранить в массиве) и выбираем случайное задание
         taskStrings = app.dbh.selectRandomTaskbyCategory(app.db, this.turnCategory);
         this.turnTask = taskStrings[1];
-        this.turnTime = 180;
-        if (Integer.valueOf(taskStrings[4]) != 0) {
-            this.turnTime = Integer.valueOf(taskStrings[4]);
-        }
+        setTurnTime(taskStrings[4]);
 
     }
-
+    private void setTurnTime (String time) {
+        this.turnTime = 180;
+        if (Integer.valueOf(time) != 0) {
+            this.turnTime = Integer.valueOf(time);
+        }
+    }
 
     //Выбрасываем кубик категрии
     private void setTurnCategory () {
@@ -114,6 +127,27 @@ public class Game {
     public String getTurnTask() {
         return this.turnTask;
     }
+
+    //Выбираем игрока делающего ставку (первого в массиве players у которого признак isPlayerSet = false)
+     void setBetPlayer() {
+
+        for (int i = 0; i < players.length; i++ ) {
+             if (!players[i].isPlayerSet) {
+                game.betPlayer = players[i];
+                break;
+            }
+
+        }
+    }
+
+    //Находим Index игрока в массиве по его значению
+    Integer getPlayerIndex(Player p) {
+        return Arrays.asList(players).indexOf(p);
+    }
+    void setIsAllPlayersSet() {
+        this.isAllPlayersSet = true;
+    }
+
 }
 
 

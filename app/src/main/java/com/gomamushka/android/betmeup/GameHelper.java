@@ -146,23 +146,14 @@ public class GameHelper {
 
     public String[] getArrayWithSteps(int min, int max, int step) {
 
-        if (min > step) {
-            min = min / step;
-            min = min * step;
-        } else min = step;
+        if (min < step) min = step;
+        if (max < step) max = step;
 
-        if (max > step) {
-            max = max / step;
-            max = max * step;
-        } else max = step;
-
-        int numbers = (max-min)/ step;
+        int numbers = (max-min)/ step + 1;
         String[] array = new String[numbers];
             for (int i=0; i < numbers; i++) {
-                array[i] = (Integer.toString((i+1)*step));
-                Log.d("FED", array.toString());
+                array[i] = (Integer.toString((i + 1) * step));
             }
-
         return  array;
     }
 

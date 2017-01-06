@@ -17,6 +17,7 @@ public class Player {
     public int bet; //сумма ставки
     public int choice; // сможет игрок или нет (пока 0 или 1)
     public int winlost; //смог или не смог (пока 0 или 1)
+    public boolean isPlayerSet; //принял ли игрок задание или сделал ставку
 
     //статистика игрока - 4 типа заданий
     public int strength;
@@ -31,5 +32,7 @@ public class Player {
         this.playerImageSrc = pi;
         this.account = new Account();
     }
-
+    void setIsPlayerSet() {
+        this.isPlayerSet = true;
+    }
 }

@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class GameActivity extends AppCompatActivity   implements DialogTask.NoticeDialogListener{
@@ -64,7 +65,6 @@ public class GameActivity extends AppCompatActivity   implements DialogTask.Noti
         @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Intent intent = getIntent();
         Integer playersCount = intent.getIntExtra("playersCount", 3);
             //Используем методы и переменные приложения BetMeUp
@@ -178,7 +178,7 @@ private void setActivePlayer(int apId) {
 }
 
    public void doTurn(View v) {
-       game.doTurn();
+       game.setTurnTask();
        //tv must be final to be used in inner class - для того чтобы исчезало через 3 секунды
        // http://stackoverflow.com/questions/11424753/why-do-variables-passed-to-runnable-need-to-be-final
 
@@ -194,7 +194,11 @@ private void setActivePlayer(int apId) {
        showMyDialog(1, "dialogTask");
 
 }
-    private void showMyDialog(int id, String fragmentName) {
+
+
+
+
+    public void showMyDialog(int id, String fragmentName) {
         // DialogFragment.show() will take care of adding the fragment
         // in a transaction.  We also want to remove any currently showing
         // dialog, so make our own transaction and take care of that here.
@@ -214,38 +218,61 @@ private void setActivePlayer(int apId) {
 
 
 
-
     // Возвращаем данные из диалога
     // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogPositiveClick(DialogFragment dialog, Integer dialogType) {
         //startTimer.setVisibility(View.VISIBLE);
-        for (Player player : game.players) {
-            if (player != game.activePlayer) {
-                Log.d(LOG_TAG, "Player: " +player);
-
-                game.betPlayer = player;
-                showMyDialog(2, "betDialog");
+        //Активный игрок принял пари
+        if (dialogType == 1) {
+            game.activePlayer.setIsPlayerSet();
+        }
+        /*
+        Если возврат из диалога ставки игрока устанавливаем признак,
+        что игрок сделал ставку, уменьшаем его счет на сумму ставки,
+        обновляем значение поля счета активности
+        и обнуляем игрока делающего ставку
+         */
+        if (dialogType == 2) {
+            game.betPlayer.account.reduceAmount(game.betPlayer.bet);
+            game.betPlayer.setIsPlayerSet();
+            updatePlayerAccountView(game.betPlayer);
+            if ( game.players[game.players.length - 1] == game.betPlayer) {
+                game.setIsAllPlayersSet();
+                Log.d ("FED", "ALLPLAYERSSET");
             }
+
+            game.betPlayer = null;
+
+
+        }
+
+        //показываем диалог ставки игрока
+               if (!game.isAllPlayersSet) {
+                game.setBetPlayer();
+                showMyDialog(2, "betDialog");
         }
     }
 
     @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
+    public void onDialogNegativeClick(DialogFragment dialog, Integer dialogType) {
         // User touched the dialog's negative button
-
-        Log.d(LOG_TAG, "У игрока : " + (playersViewAccId + game.activePlayerId));
-        @SuppressWarnings("ResourceType") TextView tv = (TextView) findViewById(playersViewAccId + game.activePlayerId);
-
-        String st = Integer.toString(game.activePlayer.account.amount);
-        tv.setText(st);
+            updatePlayerAccountView(game.activePlayer);
 
     }
 
     public void startTimer (View v) {
         Log.d(LOG_TAG, "Запускаем таймер:  " + game.turnTime);
+    }
+
+    //Обновляем отображение количества денег на счете игрока
+    private void updatePlayerAccountView (Player p) {
+        @SuppressWarnings("ResourceType") TextView tv = (TextView) findViewById(playersViewAccId + game.getPlayerIndex(p));
+
+        String st = Integer.toString(p.account.amount);
+        tv.setText(st);
     }
 
 

@@ -21,16 +21,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="@string/button_accept_task"
-                android:onClick="onClick">
+                android:text="@string/button_accept_task">
         </Button>
         <Button
                 android:id="@+id/btnNo_dialog_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="@string/button_decline_task"
-                android:onClick="onClick">
+                android:text="@string/button_decline_task">
         </Button>
     </LinearLayout>
 </LinearLayout>

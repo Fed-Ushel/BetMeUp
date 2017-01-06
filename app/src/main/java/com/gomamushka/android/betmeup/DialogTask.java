@@ -26,6 +26,8 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
         private Resources res;
         private Integer dialogType;
         private View v;
+        private Integer playerBet; //ставка игрока
+        private String[] numberPickerValues; //массив значений для numberPicker
 
     // игра
     private Game game;
@@ -44,8 +46,8 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
  * implement this interface in order to receive event callbacks.
  * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NoticeDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
-        public void onDialogNegativeClick(DialogFragment dialog);
+        public void onDialogPositiveClick(DialogFragment dialog, Integer dialogType);
+        public void onDialogNegativeClick(DialogFragment dialog, Integer dialogType);
     }
 
     // Use this instance of the interface to deliver action events
@@ -122,19 +124,41 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
 
            //Ставка игрока
            case 2:
-               getDialog().setTitle(game.betPlayer.name + ": " + R.string.bettext);
+               getDialog().setTitle(game.betPlayer.name + ": " + getString(R.string.bettext));
                v = inflater.inflate(R.layout.bet_layout, null);
                NumberPicker numberPicker = (NumberPicker) v.findViewById(R.id.numberPickerBet);
                int min = game.betPlayer.account.amount / 10;
                int max = game.betPlayer.account.amount / 2;
                int step = 10;
 
-               String[] myValues = game.helper.getArrayWithSteps(min, max, step); //get the values with steps... Normally
-                Log.d("FED", "Массив: " + Arrays.toString(myValues));
-                //Setting the NumberPick
-               numberPicker.setMinValue(0);
-               numberPicker.setMaxValue((max-step)/min+1); //Like iStepsArray in the function
-               numberPicker.setDisplayedValues(myValues);//put on NumberPicker
+               numberPickerValues = game.helper.getArrayWithSteps(min, max, step); //get the values with steps... Normally
+
+               // Prevent ArrayOutOfBoundExceptions by setting
+               // values array to null so its not checked
+               numberPicker.setDisplayedValues(null);
+               //Setting the NumberPick
+               numberPicker.setMinValue(1);
+               numberPicker.setMaxValue(numberPickerValues.length); //Like iStepsArray in the function
+               numberPicker.setDisplayedValues(numberPickerValues);//put on NumberPicker
+
+               //Устанавливаем playerBet в значение по- (минимум) (если не будет изменено значение picker)
+               playerBet = Integer.parseInt(numberPickerValues[0]);
+
+               //Добавляем Listener на изменение значения numberPicker
+               numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                   @Override
+                   public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                    //Сразу обновляем значение ставки игрока. Если кнопка ОК не будет нажата, то isPlayerSet не будет установлен и ставку можно будет изменить
+                    playerBet = Integer.parseInt(numberPickerValues[i1]);
+
+
+                   }
+               });
+
+
+
+               Button betSet = (Button) v.findViewById(R.id.btnYes_bet_layout);
+               betSet.setOnClickListener(this);
 
        }
 
@@ -149,15 +173,23 @@ public class DialogTask extends DialogFragment implements View.OnClickListener {
         switch(v.getId()) {
             case R.id.btnNo_dialog_layout:
                 game.activePlayer.account.reduceAmount(cancelBet);
-                mListener.onDialogNegativeClick(DialogTask.this);
+                mListener.onDialogNegativeClick(DialogTask.this, this.dialogType);
                dismiss();
                 break;
 
             case R.id.btnYes_dialog_layout:
-                mListener.onDialogPositiveClick(DialogTask.this);
+                mListener.onDialogPositiveClick(DialogTask.this, this.dialogType);
+                dismiss();
+                break;
+
+            case R.id.btnYes_bet_layout:
+                game.betPlayer.bet = playerBet;
+                mListener.onDialogPositiveClick(DialogTask.this, this.dialogType);
                 dismiss();
                 break;
         }
+
+
 
     }
 
